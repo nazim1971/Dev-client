@@ -1,0 +1,10 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+.table-bg tr:nth-child(even) {
+    background-color: rgb(255, 213, 205);
+}
+
+
