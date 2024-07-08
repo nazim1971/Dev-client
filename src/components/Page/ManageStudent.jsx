@@ -3,12 +3,65 @@ import { BsEye } from "react-icons/bs";
 import { FaMagnifyingGlass } from "react-icons/fa6";
 import { FiDelete } from "react-icons/fi";
 import UpdateModal from "../Modal/UpdateModal";
+import useAxiosPublic from "../Hooks/useAxiosPublic";
+import { useQuery } from "@tanstack/react-query";
+import useAuth from "../Hooks/useAuth";
+import { useState } from "react";
+import Swal from "sweetalert2";
+import DetailsModal from "../Modal/DetailsModal";
+import LoadingSpinner from "../Hooks/LoadingSpinner";
 
 const ManageStudent = () => {
-  const handleShowModal = () => {
+  const {user}  = useAuth();
+  const [id,setId] = useState()
+
+  const axiosPublic = useAxiosPublic();
+  //get all label
+  const {data: students=[], refetch, isLoading} = useQuery({
+ queryKey: ['students', user],
+ queryFn: async()=>{
+  const {data} = await axiosPublic(`/allStudent/${user?.email}`);
+  return data;
+ }})
+
+
+  const handleShowModal = (id) => {
     document.getElementById('my_modal_2').showModal();
-   
+   setId(id)
   };
+  const handleShowModal1 = (id)=>{
+    document.getElementById('my_modal_1').showModal();
+    setId(id)
+  }
+
+  const handleDelete = (id)=>{
+    try {
+        Swal.fire({
+          title: "Are you sure?",
+          text: "You won't be able to revert this!",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#3085d6",
+          cancelButtonColor: "#d33",
+          confirmButtonText: "Yes, delete it!",
+        }).then(async (result) => {
+          if (result.isConfirmed) {
+             await axiosPublic.delete(`/deleteStudent/${id}`);
+            
+  
+            Swal.fire({
+              title: "Deleted!",
+              text: "Your file has been deleted.",
+              icon: "success",
+            });
+          }
+          refetch();
+        });
+      } catch (error) {
+        console.error("There was an error deleting the item!", error);
+      }
+  }
+    if(isLoading) return <LoadingSpinner/>
     return (
         <div>
 
@@ -39,34 +92,26 @@ const ManageStudent = () => {
     </thead>
     <tbody>
       {/* row 1 */}
-      <tr>
-        <th>1</th>
-        <td>Cy Ganderton</td>
-        <td>Quality Control Specialist</td>
-        <td>Blue</td>
-        <td className="flex gap-4 text-red-500" > <BsEye/> <BiEdit onClick={handleShowModal} /> <FiDelete/> </td>
-      </tr>
-      {/* row 2 */}
-      <tr>
-        <th>2</th>
-        <td>Hart Hagerty</td>
-        <td>Desktop Support Technician</td>
-        <td>Purple</td>
-        <td className="flex gap-4 text-red-500" > <BsEye/> <BiEdit/> <FiDelete/> </td>
-      </tr>
-      {/* row 3 */}
-      <tr>
-        <th>3</th>
-        <td>Brice Swyre</td>
-        <td>Tax Accountant</td>
-        <td>Red</td>
-        <td className="flex gap-4 text-red-500" > <BsEye/> <BiEdit/> <FiDelete/> </td>
-      </tr>
+      {
+        students.map((i,idx)=>
+         <tr key={i._id}>
+        <th>{idx+1} </th>
+        <td> {i.firstName} {i.middleName} {i.lastName} </td>
+        <td> {i.className} </td>
+        <td> {i.roll} </td>
+        <td className="flex gap-4 text-red-500" > 
+          <BsEye onClick={()=>handleShowModal1(i)} />
+           <BiEdit onClick={()=>handleShowModal(i)} />
+           <FiDelete onClick={()=>handleDelete(i._id)} /> </td>
+      </tr>)
+      }
+   
       
     </tbody>
   </table>
 </div>
-<UpdateModal/>
+<UpdateModal i={id} refetch={refetch} />
+<DetailsModal i={id} />
         </div>
     );
 };

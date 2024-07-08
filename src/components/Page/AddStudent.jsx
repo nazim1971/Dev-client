@@ -1,30 +1,46 @@
 import { useForm } from "react-hook-form";
+import useAxiosPublic from "../Hooks/useAxiosPublic";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
+import useAuth from "../Hooks/useAuth";
+import Clock from "./Clock";
 
 const AddStudent = () => {
-
+    const axiosPublic = useAxiosPublic();
+    const {user} = useAuth();
+    const navigate = useNavigate();
     const {
         register,
         handleSubmit,
         reset
       } = useForm()
 
-      const onSubmit = (data) => {
+      const onSubmit = async(data) => {
         const {firstName, middleName,lastName,className,division,roll,address1,address2,landmark,city,pincode} = data
 
         const formData = {
+            authorEmail: user?.email,
             firstName, middleName,lastName,className,division,roll,address1,address2,landmark,city,pincode
         }
-      
-        console.table(formData);
-        reset()
+       
+        const res = await axiosPublic.post('/addStudent',formData)
+        
+        if(res.data.acknowledged === true){
+            toast.success('Student Added')
+            console.table(res);
+            reset()
+            navigate('/manageStudent')
+        }
+    
+        
     }
 
 
   return (
     <div>
-      <div className="flex justify-between my-5 border">
+      <div className="flex justify-between my-5 ">
         <p>Add Student</p>
-        <p>Data 7 july 10.22pm</p>
+        <Clock/>
       </div>
       
       <form onSubmit={handleSubmit(onSubmit)}>

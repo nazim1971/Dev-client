@@ -1,22 +1,17 @@
 import { useContext, useState } from "react";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link,  useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import { FaGoogle, FaRegEye, FaRegEyeSlash } from "react-icons/fa";
+import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 import { AuthContext } from "../Provider/AuthProvider";
+import toast from "react-hot-toast";
 
 
 const Login = () => {
-
-
-
    
-  const { login ,googleLogin} = useContext(AuthContext);
+  const { user,login ,googleLogin} = useContext(AuthContext);
   
   // show password
   const [pass, setPass] = useState(false);
-  const location = useLocation();
 const navigate = useNavigate();
 
 const {
@@ -31,7 +26,7 @@ const onSubmit = (data) => {
     .then(() => {
       toast.success("Login Successfully");
      
-      navigate(location?.state ? location.state : "/");
+      navigate("/");
     })
     .catch((err) => {
       if (err.code === "auth/invalid-credential") {
@@ -45,12 +40,14 @@ const handleGoogleLogin = () => {
   googleLogin()
     .then(() => {
       toast.success("Login Successfully");
-      navigate(location?.state ? location.state : "/");
+      navigate("/");
     })
     .catch();
 };
 
-
+  if(user) {
+    navigate('/')
+  }
     return (
       <div className="my-20">
       <div className="flex w-full border max-w-sm mx-auto overflow-hidden  rounded-lg shadow-lg  lg:max-w-4xl">
@@ -128,7 +125,7 @@ const handleGoogleLogin = () => {
                   <span className="w-1/5 border-b md:w-1/4"></span>
               </div>
           </div>
-      </div> <ToastContainer/>
+      </div> 
   </div>
     );
 };

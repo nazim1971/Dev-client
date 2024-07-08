@@ -1,14 +1,13 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useContext, useState } from "react";
+import {  useState } from "react";
 import { useForm } from "react-hook-form";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa6";
-import { AuthContext } from "../Provider/AuthProvider";
+import useAuth from "../Hooks/useAuth";
+import toast from "react-hot-toast";
 
 const Register = () => {
 
-  const { createUser,updateUserProfile } = useContext(AuthContext);
+  const {user, createUser,updateUserProfile } = useAuth();
 // show password
     const [pass, setPass] = useState(false);
     const location = useLocation();
@@ -21,7 +20,7 @@ const Register = () => {
     setError
   } = useForm()
   const onSubmit = (data) => {
-    const {email,password,name,photo} = data
+    const {email,password,name} = data
 
 
     // password validation
@@ -53,7 +52,7 @@ const Register = () => {
     .then(() => {
         toast.success("Account create Successfully");
         // create user profile
-        updateUserProfile(name, photo).then(() => {
+        updateUserProfile(name).then(() => {
           navigate(location?.state ? location.state : "/");
         });
       }).catch((error) => {
@@ -66,6 +65,10 @@ const Register = () => {
       });
 
 
+  }
+
+  if(user) {
+    navigate('/')
   }
 
   return (
@@ -93,13 +96,6 @@ const Register = () => {
                   <input
                   {...register("email",{required: true})}
                    className="block w-full px-4 py-2   border rounded-lg  focus:border-blue-400 focus:ring-opacity-40  focus:outline-none focus:ring focus:ring-blue-300" type="email" />
-              </div>
-              <div className="mt-4">
-                  <label className="block mb-2 text-sm font-medium " >Photo</label>
-                  <input
-                  placeholder="Photo Url"
-                  {...register("photo",{required: true})}
-                   className="block w-full px-4 py-2   border rounded-lg  focus:border-blue-400 focus:ring-opacity-40  focus:outline-none focus:ring focus:ring-blue-300" type="url" />
               </div>
       
               <div className="mt-4">
@@ -144,7 +140,6 @@ const Register = () => {
           </div>
           <div className="hidden bg-cover lg:block lg:w-1/2" style={{backgroundImage: 'url(https://i.ibb.co/F4SRb4t/sign-up.jpg)'}} ></div>
       </div>
-      <ToastContainer />
     </div>
   );
 };

@@ -1,12 +1,24 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
+import useAuth from "../Hooks/useAuth";
 
 const Sidebar = () => {
+
+    const { user, logOut } = useAuth();
+    const navigate = useNavigate()
+    
+    const handleSignOut = () => {
+      logOut()
+      .then(()=>{
+        navigate('/login')
+      })
+      .catch();}
+
     const navLink = (
         <>
             <li>
                 <NavLink
             
-                    to="/addStudent"
+                    to="/"
                     className={({ isActive }) =>
                         `block ${isActive ? 'bg-red-500 text-white ' : 'text-black'}`
                     }
@@ -24,7 +36,7 @@ const Sidebar = () => {
                     Manage Student
                 </NavLink>
             </li>
-            <li className="block">
+            <li onClick={handleSignOut} className="block">
                 <NavLink
                 >
                     Logout
