@@ -1,18 +1,17 @@
 import { useForm } from "react-hook-form";
-import useAxiosPublic from "../Hooks/useAxiosPublic";
-import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import useAuth from "../Hooks/useAuth";
 import Clock from "./Clock";
+import { useDispatch } from "react-redux";
+import { createUser } from "../../app/userDetailsSlice";
 
 const AddStudent = () => {
-    const axiosPublic = useAxiosPublic();
     const {user} = useAuth();
     const navigate = useNavigate();
+    const dispatch = useDispatch();
     const {
         register,
         handleSubmit,
-        reset
       } = useForm()
 
       const onSubmit = async(data) => {
@@ -22,17 +21,9 @@ const AddStudent = () => {
             authorEmail: user?.email,
             firstName, middleName,lastName,className,division,roll,address1,address2,landmark,city,pincode
         }
-       
-        const res = await axiosPublic.post('/addStudent',formData)
-        
-        if(res.data.acknowledged === true){
-            toast.success('Student Added')
-            console.table(res);
-            reset()
-            navigate('/manageStudent')
-        }
-    
-        
+       dispatch(createUser(formData))
+       navigate('/manageStudent')
+     
     }
 
 

@@ -6,7 +6,6 @@ import Error from "./Error";
 import Login from "../components/SignIn/Login";
 import Register from "../components/SignIn/Register";
 import Private from "./Private";
-
 const routes = createBrowserRouter([
     {
       path: "/",

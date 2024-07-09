@@ -47,8 +47,8 @@ const Sidebar = () => {
 
     return (
         <div>
-            <div>
-                <ul >
+            <div className="flex flex-col my-auto">
+                <ul className="h-full border w-full" >
                     {navLink}
                 </ul>
             </div>

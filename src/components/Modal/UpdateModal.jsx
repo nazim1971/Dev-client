@@ -1,12 +1,21 @@
 import { useForm } from "react-hook-form";
-import toast from "react-hot-toast";
-import useAxiosPublic from "../Hooks/useAxiosPublic";
+// import toast from "react-hot-toast";
+// import useAxiosPublic from "../Hooks/useAxiosPublic";
+import { updateUser } from "../../app/userDetailsSlice";
+import { useDispatch, useSelector } from "react-redux";
 
-const UpdateModal = ({ i,refetch }) => {
-  const axiosPublic = useAxiosPublic();
+const UpdateModal = ({ id }) => {
+  // const axiosPublic = useAxiosPublic();
   // const {loader,setLoader} = useAuth();
-  const { register, handleSubmit, reset } = useForm();
+  const { register, handleSubmit } = useForm();
+  const dispatch  = useDispatch();
 
+  const allStudent = useSelector(state=> state.app.users)
+  console.log(allStudent);
+  console.log(id);
+  const singleStudent = allStudent.filter(e=> e._id === id);
+  console.log(singleStudent);
+  
   const onSubmit = async(data) => {
     const {firstName, middleName,lastName,className,division,roll,address1,address2,landmark,city,pincode} = data
 
@@ -14,14 +23,16 @@ const UpdateModal = ({ i,refetch }) => {
         firstName, middleName,lastName,className,division,roll,address1,address2,landmark,city,pincode
     }
    
-    const res = await axiosPublic.put(`/updateStudent/${i._id}`,formData)
-    console.log(res);
-    if(res.data.modifiedCount >= 1){
-        reset()
-        refetch()
-        document.getElementById("my_modal_2").close();
-        toast.success('Update student data Successfully')
-    }
+
+    dispatch(updateUser(id,formData))
+    // const res = await axiosPublic.put(`/updateStudent/${i._id}`,formData)
+    // console.log(res);
+    // if(res.data.modifiedCount >= 1){
+    //     reset()
+    //     refetch()
+    //     document.getElementById("my_modal_2").close();
+    //     toast.success('Update student data Successfully')
+    // }
 }
 
 
@@ -38,7 +49,7 @@ const UpdateModal = ({ i,refetch }) => {
                     First Name
                 </label>
                <input
-                defaultValue={i?.firstName}
+                defaultValue={singleStudent.firstName}
                   {...register("firstName", { required: true })}
                   placeholder="First Name"
                   className=" input  input-bordered w-full"
@@ -51,7 +62,7 @@ const UpdateModal = ({ i,refetch }) => {
                     Middle Name
                 </label>
                <input
-                defaultValue={i?.middleName}
+                defaultValue={singleStudent.middleName}
                   {...register("middleName", { required: true })}
                   placeholder="Middle Name"
                   className=" input  input-bordered w-full"
@@ -64,7 +75,7 @@ const UpdateModal = ({ i,refetch }) => {
                         Last Name
                     </label>
                 <input
-                defaultValue={i?.lastName}
+                defaultValue={singleStudent.lastName}
                   {...register("lastName", { required: true })}
                   placeholder="Last Name"
                   className=" input  input-bordered w-full"
@@ -81,7 +92,7 @@ const UpdateModal = ({ i,refetch }) => {
                     Class
                 </label>
                 <select
-                defaultValue={i?.className}
+                defaultValue={singleStudent.className}
                   {...register("className", { required: true })}
                   className=" border rounded-lg w-full h-12"
                 >
@@ -105,7 +116,7 @@ const UpdateModal = ({ i,refetch }) => {
                     Division
                 </label>
              <select
-                defaultValue={i?.division}
+                defaultValue={singleStudent.division}
                   placeholder="select"
                   {...register("division", { required: true })}
                   className=" border rounded-lg w-full h-12"
@@ -124,7 +135,7 @@ const UpdateModal = ({ i,refetch }) => {
                     Roll
                 </label>
                <input
-                defaultValue={i?.roll}
+                defaultValue={singleStudent.roll}
                   {...register("roll", { required: true, pattern: /^\d{2}$/ })}
                   min="10"
                   max="99"
@@ -143,7 +154,7 @@ const UpdateModal = ({ i,refetch }) => {
                         Address 1
                     </label>
                 <input
-                defaultValue={i?.address1}
+                defaultValue={singleStudent.address1}
                   {...register("address1", { required: true })}
                   placeholder="Address Line 1"
                   className=" input  input-bordered w-full"
@@ -156,7 +167,7 @@ const UpdateModal = ({ i,refetch }) => {
                         Address 2
                     </label>
                 <input
-                defaultValue={i?.address2}
+                defaultValue={singleStudent.address2}
                   {...register("address2", { required: true })}
                   placeholder="Address Line 2"
                   className=" input  input-bordered w-full"
@@ -173,7 +184,7 @@ const UpdateModal = ({ i,refetch }) => {
                         Landmark
                     </label>
                 <input
-                defaultValue={i?.landmark}
+                defaultValue={singleStudent.landmark}
                   {...register("landmark", { required: true })}
                   placeholder="Landmark"
                   className=" input  input-bordered w-full"
@@ -186,7 +197,7 @@ const UpdateModal = ({ i,refetch }) => {
                         City
                     </label>
                 <input
-                defaultValue={i?.city}
+                defaultValue={singleStudent.city}
                   {...register("city", { required: true })}
                   placeholder="City"
                   className=" input  input-bordered w-full"
@@ -199,7 +210,7 @@ const UpdateModal = ({ i,refetch }) => {
                     Pincode
                 </label>
                <input
-                defaultValue={i?.pincode}
+                defaultValue={singleStudent.pincode}
                   {...register("pincode", {
                     required: true,
                     pattern: /^\d{4,6}$/,

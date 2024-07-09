@@ -4,27 +4,30 @@ import { FaMagnifyingGlass } from "react-icons/fa6";
 import { FiDelete } from "react-icons/fi";
 import UpdateModal from "../Modal/UpdateModal";
 import useAxiosPublic from "../Hooks/useAxiosPublic";
-import { useQuery } from "@tanstack/react-query";
 import useAuth from "../Hooks/useAuth";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import DetailsModal from "../Modal/DetailsModal";
 import LoadingSpinner from "../Hooks/LoadingSpinner";
+import { useDispatch, useSelector } from "react-redux";
+import { getUser } from "../../app/userDetailsSlice";
 
 const ManageStudent = () => {
   const {user}  = useAuth();
   const [id,setId] = useState()
+  const dispatch = useDispatch();
+  
+  const {users: students=[], loading=false} =useSelector((state) => state.app || {})
 
   const axiosPublic = useAxiosPublic();
-  //get all label
-  const {data: students=[], refetch, isLoading} = useQuery({
- queryKey: ['students', user],
- queryFn: async()=>{
-  const {data} = await axiosPublic(`/allStudent/${user?.email}`);
-  return data;
- }})
 
+useEffect( ()=>{
+  if(user?.email){
+    dispatch(getUser(user.email))
+  }
+} ,[user?.email, dispatch ] )
 
+   console.log(id);
   const handleShowModal = (id) => {
     document.getElementById('my_modal_2').showModal();
    setId(id)
@@ -55,13 +58,12 @@ const ManageStudent = () => {
               icon: "success",
             });
           }
-          refetch();
         });
       } catch (error) {
         console.error("There was an error deleting the item!", error);
       }
   }
-    if(isLoading) return <LoadingSpinner/>
+    if(loading) return <LoadingSpinner/>
     return (
         <div>
 
@@ -98,10 +100,10 @@ const ManageStudent = () => {
         <th>{idx+1} </th>
         <td> {i.firstName} {i.middleName} {i.lastName} </td>
         <td> {i.className} </td>
-        <td> {i.roll} </td>
+        <td> {i.roll}</td>
         <td className="flex gap-4 text-red-500" > 
-          <BsEye onClick={()=>handleShowModal1(i)} />
-           <BiEdit onClick={()=>handleShowModal(i)} />
+          <BsEye onClick={()=>handleShowModal1(i._id)} />
+           <BiEdit onClick={()=>handleShowModal(i._id)} />
            <FiDelete onClick={()=>handleDelete(i._id)} /> </td>
       </tr>)
       }
@@ -110,8 +112,8 @@ const ManageStudent = () => {
     </tbody>
   </table>
 </div>
-<UpdateModal i={id} refetch={refetch} />
-<DetailsModal i={id} />
+<UpdateModal i={id}  />
+<DetailsModal id={id} />
         </div>
     );
 };
